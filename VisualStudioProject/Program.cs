@@ -10,6 +10,7 @@ namespace Ximia5
         static void Main(string[] args)
         {
             // XimiaEGE.MainF.DownloadBD(messenge:Console.WriteLine);
+            
             Console.WriteLine();
             if (MainF.LoadData())
             {

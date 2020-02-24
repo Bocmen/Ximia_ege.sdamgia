@@ -16,7 +16,7 @@ namespace XimiaEGE
         public const string Url = "https://chem-ege.sdamgia.ru";
         public const string NameFolderData = "Data";
         public const string NameJsonBd = "BD.json";
-        public const string PatchExampleHtmlFile = "Example.html";
+      //  public const string PatchExampleHtmlFile = "Example.html";
     }
     public static class GetMonths
     {
@@ -547,7 +547,7 @@ namespace XimiaEGE
             string Resul = "";
             foreach (var Elem in varEchoes)
                 Resul += GenerateHtmlVar(Elem, Nums, ref LinkCPart);
-            return File.ReadAllText(Setting.PatchExampleHtmlFile).Replace("{0}", varEchoes[0].NameMesac).Replace("{1}", Resul);
+            return HtmlExempleGet.Htlml.Replace("{0}", varEchoes[0].NameMesac).Replace("{1}", Resul);
         }
         private static string GenerateHtmlVar(ResulDataVarEcho var, List<uint> Nums, ref uint LinkCPart)
         {

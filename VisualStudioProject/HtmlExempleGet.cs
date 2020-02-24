@@ -1,20 +1,31 @@
-﻿<!doctype html>
-<html lang="ru">
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace XimiaEGE
+{
+    public static class HtmlExempleGet
+    {
+        public const string Htlml = @"
+<!doctype html>
+<html lang='ru'>
 <head>
-    <meta charset="utf-8" />
-    <title>{0}</title>
-    <style type="text/css">
+    <meta charset = 'utf-8' />
+    <title> 
+{0} 
+</title>
+    <style type = 'text/css' >
         table {
             border-spacing: 0;
             empty-cells: hide;
             margin: 0 auto;
         }
-        td {
+td {
             padding: 7px 25px;
             text-align: center;
             border-bottom: 2px solid #F4EEE8;
             transition: all 0.5s linear;
-            font-size: 130%;
+font-size: 130%;
         }
         td:first-child {
             text-align: left;
@@ -28,17 +39,21 @@
             border-top-left-radius: 10px;
             border-top-right-radius: 10px;
         }
-        td:nth-child(even) {
-            background: #F6D27E;
+        td:nth-child(even)
+{
+background: #F6D27E;
         }
-        td:nth-child(odd) {
-            background: #D1C7BF;
+td:nth-child(odd)
+{
+background: #D1C7BF;
         }
-        th:nth-child(even) {
-            background: #F6D27E;
+th:nth-child(even)
+{
+background: #F6D27E;
         }
-        th:nth-child(odd) {
-            background: #D1C7BF;
+th:nth-child(odd)
+{
+background: #D1C7BF;
         }
         .round-top {
             border-top-left-radius: 5px;
@@ -46,14 +61,15 @@
         .round-bottom {
             border-bottom-left-radius: 5px;
         }
-        tr:hover td {
-            background: #D1C7BF;
+        tr:hover td
+{
+    background: #D1C7BF;
             font-weight: bold;
-        }
+}
         .left_margin,
-        .pbody .left_margin,
-        .solution .left_margin,
-        .probtext .left_margin {
+        .pbody.left_margin,
+        .solution.left_margin,
+        .probtext.left_margin {
             margin: 0;
             text-indent: 20px
         }
@@ -62,9 +78,9 @@
         }
         /* скрываем чекбоксы и блоки с содержанием */
         .hide,
-        .hide:checked + label ~ div {
-            display: none;
-        }
+        .hide:checked + label ~div {
+display: none;
+}
         /* вид текста label */
         .hide + label {
             margin: 0;
@@ -92,34 +108,43 @@
             animation: fade ease-in 0.5s;
         }
         /* анимация при появлении скрытых блоков */
-        @-moz-keyframes fade {
-            from {
-                opacity: 0;
+        @-moz-keyframes fade
+{
+    from
+    {
+    opacity: 0;
+    }
+    to
+    {
+    opacity: 1
             }
-            to {
-                opacity: 1
+}
+        @-webkit-keyframes fade
+{
+    from
+    {
+    opacity: 0;
+    }
+    to
+    {
+    opacity: 1
             }
-        }
-        @-webkit-keyframes fade {
-            from {
-                opacity: 0;
+}
+@keyframes fade
+{
+    from
+    {
+    opacity: 0;
+    }
+    to
+    {
+    opacity: 1
             }
-            to {
-                opacity: 1
-            }
-        }
-        @keyframes fade {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1
-            }
-        }
+}
         .hide + label:before {
             background-color: #1e90ff;
             color: #fff;
-            content: "\002B";
+            content: '\002B';
             display: block;
             float: left;
             font-size: 14px;
@@ -134,7 +159,7 @@
             border-radius: 50%;
         }
         .hide:checked + label:before {
-            content: "\2212";
+            content: '\2212';
         }
     </style>
 </head>
@@ -142,3 +167,6 @@
     {1}
 </body>
 </html>
+";
+    }
+}

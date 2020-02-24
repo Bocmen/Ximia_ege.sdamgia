@@ -3991,24 +3991,27 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\den20\\.nuget\\packages\\": {},
+    "C:\\Users\\Bocmen\\.nuget\\packages\\": {},
+    "C:\\Microsoft\\Xamarin\\NuGet\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\den20\\source\\repos\\Ximia5\\Ximia5\\Ximia5.csproj",
+      "projectUniqueName": "C:\\Users\\Bocmen\\Documents\\GitHub\\Ximia_ege.sdamgia\\VisualStudioProject\\Ximia5.csproj",
       "projectName": "Ximia5",
-      "projectPath": "C:\\Users\\den20\\source\\repos\\Ximia5\\Ximia5\\Ximia5.csproj",
-      "packagesPath": "C:\\Users\\den20\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\den20\\source\\repos\\Ximia5\\Ximia5\\obj\\",
+      "projectPath": "C:\\Users\\Bocmen\\Documents\\GitHub\\Ximia_ege.sdamgia\\VisualStudioProject\\Ximia5.csproj",
+      "packagesPath": "C:\\Users\\Bocmen\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Bocmen\\Documents\\GitHub\\Ximia_ege.sdamgia\\VisualStudioProject\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
+        "C:\\Microsoft\\Xamarin\\NuGet\\",
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\den20\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\Bocmen\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp2.1"
@@ -4036,6 +4039,7 @@
             "version": "[1.11.20, )"
           },
           "Microsoft.NETCore.App": {
+            "suppressParent": "All",
             "target": "Package",
             "version": "[2.1.0, )",
             "autoReferenced": true
@@ -4046,10 +4050,16 @@
           }
         },
         "imports": [
-          "net461"
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48"
         ],
         "assetTargetFallback": true,
-        "warn": true
+        "warn": true,
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.101\\RuntimeIdentifierGraph.json"
       }
     }
   }
