@@ -16,7 +16,7 @@ namespace XimiaEGE
         public const string Url = "https://chem-ege.sdamgia.ru";
         public const string NameFolderData = "Data";
         public const string NameJsonBd = "BD.json";
-      //  public const string PatchExampleHtmlFile = "Example.html";
+        //  public const string PatchExampleHtmlFile = "Example.html";
     }
     public static class GetMonths
     {
@@ -443,7 +443,7 @@ namespace XimiaEGE
     {
         public delegate void Messenge(string Mess);
 
-        public static List<Month> monthsGlob = new List<Month>(0);
+        public static DataSave Bd = new DataSave();
         public static void DownloadBD(string PatchSave = null, Messenge messenge = null)
         {
             PatchSave += PatchSave != null ? PatchSave + "\\" + Setting.NameFolderData : Setting.NameFolderData;
@@ -478,9 +478,15 @@ namespace XimiaEGE
                 }
             }
             catch (Exception e) { Console.WriteLine(e.Message); goto restart; }
-            monthsGlob = months;
-            File.WriteAllText((PatchSave != null) ? PatchSave + "\\" + Setting.NameJsonBd : Setting.NameJsonBd, JsonConvert.SerializeObject(months));
+            Bd = new DataSave { months= months, Patch= PatchSave };
+            File.WriteAllText((PatchSave != null) ? PatchSave + "\\" + Setting.NameJsonBd : Setting.NameJsonBd, JsonConvert.SerializeObject(Bd));
             if (messenge != null) messenge.Invoke("Готово");
+        }
+        [System.Serializable]
+        public struct DataSave
+        {
+            public string Patch;
+            public List<Month> months;
         }
         [System.Serializable]
         public struct Month
@@ -494,19 +500,35 @@ namespace XimiaEGE
             public uint Num;
             public GetVar.VarOtvet varOtvet;
         }
-        public static bool LoadData(string Patch = null)
+        public static bool LoadData(string Patch = null, bool UpdaeData = false)
         {
             Patch = Patch != null ? Patch + "\\" + Setting.NameFolderData : Setting.NameFolderData;
             if (!File.Exists((Patch != null) ? Patch + "\\" + Setting.NameJsonBd : Setting.NameJsonBd))
                 return false;
-            monthsGlob = JsonConvert.DeserializeObject<List<Month>>(File.ReadAllText((Patch != null) ? Patch + "\\" + Setting.NameJsonBd : Setting.NameJsonBd));
+            Bd = JsonConvert.DeserializeObject<DataSave>(File.ReadAllText((Patch != null) ? Patch + "\\" + Setting.NameJsonBd : Setting.NameJsonBd));
+            if (!UpdaeData)
+            {
+                foreach (var Masc in Bd.months)
+                {
+                    foreach (var Var in Masc.vars)
+                    {
+                        for (int i = 0; i < Var.varOtvet.otvet_C_Parts.Count; i++)
+                        {
+                            var Otv = Var.varOtvet.otvet_C_Parts[i];
+                            // Логка измненя ссылок
+                            //===========================
+                            Var.varOtvet.otvet_C_Parts[i] = Otv;
+                        }
+                    }
+                }
+            }
             return true;
         }
         public static ResulDataVarEcho GetVarID(string Id, string Patch, bool DownloadAutoVar = true)
         {
             // Поиск среди бд
             bool state = true;
-            foreach (var Mon in monthsGlob)
+            foreach (var Mon in Bd.months)
             {
                 foreach (var v in Mon.vars)
                 {
@@ -565,8 +587,8 @@ namespace XimiaEGE
             LinkCPart++;
             string resul = null;
             foreach (var Elem in var.var.varOtvet.otvet_C_Parts)
-                if (Nums.Contains(Elem.Num + (uint)var.var.varOtvet.otvet_A_Parts.Count)) resul += "<div class = \"Num_C_Part\" id = \"" + Elem.Num+ "\"><h2><b> Задание номер:" + (Elem.Num + (uint)var.var.varOtvet.otvet_A_Parts.Count) + "</b></h2>" + Elem.Data+"</div>";
-            if(resul!=null)
+                if (Nums.Contains(Elem.Num + (uint)var.var.varOtvet.otvet_A_Parts.Count)) resul += "<div class = \"Num_C_Part\" id = \"" + Elem.Num + "\"><h2><b> Задание номер:" + (Elem.Num + (uint)var.var.varOtvet.otvet_A_Parts.Count) + "</b></h2>" + Elem.Data + "</div>";
+            if (resul != null)
                 return "<input type=\"checkbox\" id=\"hd - " + LinkCPart + "\" class=\"hide\"/><label for=\"hd - " + LinkCPart + "\" >Скрыть & Раскрыть</label><div class=\"Tab_C_Part\">" + resul + "</div>";
             return null;
         }
