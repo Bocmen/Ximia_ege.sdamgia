@@ -222,7 +222,7 @@ namespace XimiaEGE
                 catch { }
             }
             // Парсинг части C
-            Patch += "\\" + varOtvet.Id;
+            Patch = Path.Combine(Patch, varOtvet.Id);
             Directory.CreateDirectory(Patch);
             if (C_Part)
             {
@@ -249,7 +249,7 @@ namespace XimiaEGE
         private static Otvet_C_Part Get_C_Part_OneNum(string IdNum, string Patch, MainF.Messenge messenge)
         {
             Otvet_C_Part otvet = new Otvet_C_Part();
-            Patch += "\\" + IdNum;
+            Patch = Path.Combine(Patch, IdNum);
             Directory.CreateDirectory(Patch);
             HtmlDocument htmlDocument = new HtmlDocument();
             htmlDocument.LoadHtml(Function.getHTML(Setting.Url + @"/problem?id=" + IdNum));
@@ -284,12 +284,12 @@ namespace XimiaEGE
                         string PatchFileSave = Elem.Attributes["src"].Value;
                         PatchFileSave = PatchFileSave.Remove(0, PatchFileSave.LastIndexOf("/") + 1);
                         PatchFileSave = PatchFileSave.Replace('?', '1').Replace('=', '9');
-                        PatchFileSave = Patch + "\\" + PatchFileSave;
+                        PatchFileSave = Path.Combine(Patch, PatchFileSave);
                         PatchFileSave += PatchFileSave.Contains(".svg") ? null : ".svg";
                         string UrlDownload = Elem.Attributes["src"].Value.Contains("http") ? Elem.Attributes["src"].Value : (Setting.Url + Elem.Attributes["src"].Value);
                         webClient.DownloadFile(UrlDownload, PatchFileSave);
                         otvet.Data = otvet.Data.Replace(Elem.Attributes["src"].Value, UrlDownload);
-                        DatFoftos.Add(new PatchDat { Url= UrlDownload, PatchFile= PatchFileSave });
+                        DatFoftos.Add(new PatchDat { Url = UrlDownload, PatchFile = PatchFileSave });
                     }
                     catch
                     {
@@ -454,7 +454,7 @@ namespace XimiaEGE
         public static DataSave Bd = new DataSave();
         public static void DownloadBD(string PatchSave = null, Messenge messenge = null)
         {
-            PatchSave += PatchSave != null ? PatchSave + "\\" + Setting.NameFolderData : Setting.NameFolderData;
+            PatchSave += PatchSave != null ? Path.Combine(PatchSave, Setting.NameFolderData) : Setting.NameFolderData;
             Directory.CreateDirectory(PatchSave);
             List<Month> months = new List<Month>(0);
         // Получение списка месяцев
@@ -467,7 +467,7 @@ namespace XimiaEGE
                 {
                     Month month = new Month { Name = elem.Mesac, vars = new List<Var>(0) };
                     // Проход по вариантам
-                    string PatchVar = PatchSave + "\\" + elem.Mesac.Replace(":", null).Replace(" ", null);
+                    string PatchVar = Path.Combine(PatchSave, elem.Mesac.Replace(":", null).Replace(" ", null));
                     PatchVar = Path.GetFullPath(PatchVar);
                     Directory.CreateDirectory(PatchVar);
                     foreach (var ElemTwo in elem.varXimIndices)
@@ -486,8 +486,8 @@ namespace XimiaEGE
                 }
             }
             catch (Exception e) { Console.WriteLine(e.Message); goto restart; }
-            Bd = new DataSave { months= months, Patch= Path.GetFullPath(PatchSave) };
-            File.WriteAllText((PatchSave != null) ? PatchSave + "\\" + Setting.NameJsonBd : Setting.NameJsonBd, JsonConvert.SerializeObject(Bd));
+            Bd = new DataSave { months = months, Patch = Path.GetFullPath(PatchSave) };
+            File.WriteAllText((PatchSave != null) ? Path.Combine(PatchSave, Setting.NameJsonBd) : Setting.NameJsonBd, JsonConvert.SerializeObject(Bd));
             if (messenge != null) messenge.Invoke("Готово");
         }
         public static bool LoadData(string Patch = null, bool UpdaeData = false)
@@ -536,18 +536,15 @@ namespace XimiaEGE
             return new ResulDataVarEcho { NameMesac = "NotDownloadVar" }; // 999 Говорит о не найденном варианте
         }
 
-        public static string GetHtmlReshenie(List<uint> Nums, string[] Vars, string Patch, bool InternetTrue_FileFalse=false)
+        public static string GetHtmlReshenie(List<uint> Nums, string[] Vars, string Patch, bool InternetTrue_FileFalse = false)
         {
-            string PatchHtml = "Test.html";
             ResulDataVarEcho[] vars = new ResulDataVarEcho[Vars.Length];
-            // 
             for (int i = 0; i < Vars.Length; i++)
                 vars[i] = GetVarID(Vars[i], Patch, false);
             foreach (var Elem in vars)
                 if (Elem.NameMesac == "NotDownloadVar")
                     return GetHtmlReshenieDownload();
-            File.WriteAllText("sds.html", GenerateStaticHtml(vars, Nums, InternetTrue_FileFalse));
-            return PatchHtml;
+            return GenerateStaticHtml(vars, Nums, InternetTrue_FileFalse);
         }
         private static string GetHtmlReshenieDownload()
         {
@@ -585,7 +582,8 @@ namespace XimiaEGE
 
         private static string Get_C_Part_Foto_Url(GetVar.Otvet_C_Part otvet_C_Part, bool InternetTrue_FileFalse)
         {
-            if (!InternetTrue_FileFalse) {
+            if (!InternetTrue_FileFalse)
+            {
                 foreach (var Elem in otvet_C_Part.PatchFotos)
                 {
                     otvet_C_Part.Data = otvet_C_Part.Data.Replace(Elem.Url, "file:///" + Elem.PatchFile);
