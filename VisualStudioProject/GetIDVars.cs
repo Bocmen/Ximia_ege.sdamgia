@@ -16,7 +16,6 @@ namespace XimiaEGE
         public const string Url = "https://chem-ege.sdamgia.ru";
         public const string NameFolderData = "Data";
         public const string NameJsonBd = "BD.json";
-        //  public const string PatchExampleHtmlFile = "Example.html";
     }
     public static class GetMonths
     {
@@ -256,6 +255,7 @@ namespace XimiaEGE
             htmlDocument.LoadHtml(Function.getHTML(Setting.Url + @"/problem?id=" + IdNum));
             // Поиск ответа на странице
             HtmlNodeCollection htmlNodes = htmlDocument.DocumentNode.SelectNodes("//div");
+            List<PatchDat> DatFoftos = new List<PatchDat>(0);
             foreach (var Elem in htmlNodes)
             {
                 try
@@ -288,14 +288,15 @@ namespace XimiaEGE
                         PatchFileSave += PatchFileSave.Contains(".svg") ? null : ".svg";
                         string UrlDownload = Elem.Attributes["src"].Value.Contains("http") ? Elem.Attributes["src"].Value : (Setting.Url + Elem.Attributes["src"].Value);
                         webClient.DownloadFile(UrlDownload, PatchFileSave);
-                        otvet.Data = otvet.Data.Replace(Elem.Attributes["src"].Value, @"file:///" + PatchFileSave);
+                        otvet.Data = otvet.Data.Replace(Elem.Attributes["src"].Value, UrlDownload);
+                        DatFoftos.Add(new PatchDat { Url= UrlDownload, PatchFile= PatchFileSave });
                     }
                     catch
                     {
                         goto restartImg;
                     }
-
                 }
+                otvet.PatchFotos = DatFoftos.ToArray();
             }
             else
             {
@@ -380,6 +381,13 @@ namespace XimiaEGE
         {
             public uint Num;
             public string Data;
+            public PatchDat[] PatchFotos;
+        }
+        [System.Serializable]
+        public struct PatchDat
+        {
+            public string PatchFile;
+            public string Url;
         }
     }
     static class Function
@@ -478,27 +486,9 @@ namespace XimiaEGE
                 }
             }
             catch (Exception e) { Console.WriteLine(e.Message); goto restart; }
-            Bd = new DataSave { months= months, Patch= PatchSave };
+            Bd = new DataSave { months= months, Patch= Path.GetFullPath(PatchSave) };
             File.WriteAllText((PatchSave != null) ? PatchSave + "\\" + Setting.NameJsonBd : Setting.NameJsonBd, JsonConvert.SerializeObject(Bd));
             if (messenge != null) messenge.Invoke("Готово");
-        }
-        [System.Serializable]
-        public struct DataSave
-        {
-            public string Patch;
-            public List<Month> months;
-        }
-        [System.Serializable]
-        public struct Month
-        {
-            public string Name;
-            public List<Var> vars;
-        }
-        [System.Serializable]
-        public struct Var
-        {
-            public uint Num;
-            public GetVar.VarOtvet varOtvet;
         }
         public static bool LoadData(string Patch = null, bool UpdaeData = false)
         {
@@ -546,7 +536,7 @@ namespace XimiaEGE
             return new ResulDataVarEcho { NameMesac = "NotDownloadVar" }; // 999 Говорит о не найденном варианте
         }
 
-        public static string GetHtmlReshenie(List<uint> Nums, string[] Vars, string Patch)
+        public static string GetHtmlReshenie(List<uint> Nums, string[] Vars, string Patch, bool InternetTrue_FileFalse=false)
         {
             string PatchHtml = "Test.html";
             ResulDataVarEcho[] vars = new ResulDataVarEcho[Vars.Length];
@@ -556,24 +546,24 @@ namespace XimiaEGE
             foreach (var Elem in vars)
                 if (Elem.NameMesac == "NotDownloadVar")
                     return GetHtmlReshenieDownload();
-            File.WriteAllText("sds.html", GenerateStaticHtml(vars, Nums));
+            File.WriteAllText("sds.html", GenerateStaticHtml(vars, Nums, InternetTrue_FileFalse));
             return PatchHtml;
         }
         private static string GetHtmlReshenieDownload()
         {
             return null;
         }
-        private static string GenerateStaticHtml(ResulDataVarEcho[] varEchoes, List<uint> Nums)
+        private static string GenerateStaticHtml(ResulDataVarEcho[] varEchoes, List<uint> Nums, bool InternetTrue_FileFalse)
         {
             uint LinkCPart = 0;
             string Resul = "";
             foreach (var Elem in varEchoes)
-                Resul += GenerateHtmlVar(Elem, Nums, ref LinkCPart);
+                Resul += GenerateHtmlVar(Elem, Nums, ref LinkCPart, InternetTrue_FileFalse);
             return HtmlExempleGet.Htlml.Replace("{0}", varEchoes[0].NameMesac).Replace("{1}", Resul);
         }
-        private static string GenerateHtmlVar(ResulDataVarEcho var, List<uint> Nums, ref uint LinkCPart)
+        private static string GenerateHtmlVar(ResulDataVarEcho var, List<uint> Nums, ref uint LinkCPart, bool InternetTrue_FileFalse)
         {
-            return "<div class =\"DataVar\" id = \"" + var.var.varOtvet.Id + "\"><h2><b>" + "Вариант номер: " + var.var.Num + "      " + ((var.NameMesac != null && var.NameMesac != "NotDownloadVar" && var.NameMesac != "NotName") ? "Месяц: " + var.NameMesac : null) + " ID [" + var.var.varOtvet.Id + "]" + "</b></h2>" + GenerateTap_Part_A(var, Nums) + GenerateTap_Part_C(var, Nums, ref LinkCPart) + "</div>";
+            return "<div class =\"DataVar\" id = \"" + var.var.varOtvet.Id + "\"><h2><b>" + "Вариант номер: " + var.var.Num + "      " + ((var.NameMesac != null && var.NameMesac != "NotDownloadVar" && var.NameMesac != "NotName") ? "Месяц: " + var.NameMesac : null) + " ID [" + var.var.varOtvet.Id + "]" + "</b></h2>" + GenerateTap_Part_A(var, Nums) + GenerateTap_Part_C(var, Nums, ref LinkCPart, InternetTrue_FileFalse) + "</div>";
         }
         private static string GenerateTap_Part_A(ResulDataVarEcho var, List<uint> Nums)
         {
@@ -582,20 +572,51 @@ namespace XimiaEGE
                 if (Nums.Contains(Elem.Num)) resul += "<tr><td>Номер " + Elem.Num + "</td><td>" + Elem.Resul + "</td></tr>";
             return resul + "</table></div>";
         }
-        private static string GenerateTap_Part_C(ResulDataVarEcho var, List<uint> Nums, ref uint LinkCPart)
+        private static string GenerateTap_Part_C(ResulDataVarEcho var, List<uint> Nums, ref uint LinkCPart, bool InternetTrue_FileFalse = false)
         {
             LinkCPart++;
             string resul = null;
             foreach (var Elem in var.var.varOtvet.otvet_C_Parts)
-                if (Nums.Contains(Elem.Num + (uint)var.var.varOtvet.otvet_A_Parts.Count)) resul += "<div class = \"Num_C_Part\" id = \"" + Elem.Num + "\"><h2><b> Задание номер:" + (Elem.Num + (uint)var.var.varOtvet.otvet_A_Parts.Count) + "</b></h2>" + Elem.Data + "</div>";
+                if (Nums.Contains(Elem.Num + (uint)var.var.varOtvet.otvet_A_Parts.Count)) resul += "<div class = \"Num_C_Part\" id = \"" + Elem.Num + "\"><h2><b> Задание номер:" + (Elem.Num + (uint)var.var.varOtvet.otvet_A_Parts.Count) + "</b></h2>" + Get_C_Part_Foto_Url(Elem, InternetTrue_FileFalse) + "</div>";
             if (resul != null)
                 return "<input type=\"checkbox\" id=\"hd - " + LinkCPart + "\" class=\"hide\"/><label for=\"hd - " + LinkCPart + "\" >Скрыть & Раскрыть</label><div class=\"Tab_C_Part\">" + resul + "</div>";
             return null;
         }
+
+        private static string Get_C_Part_Foto_Url(GetVar.Otvet_C_Part otvet_C_Part, bool InternetTrue_FileFalse)
+        {
+            if (!InternetTrue_FileFalse) {
+                foreach (var Elem in otvet_C_Part.PatchFotos)
+                {
+                    otvet_C_Part.Data = otvet_C_Part.Data.Replace(Elem.Url, "file:///" + Elem.PatchFile);
+                }
+            }
+            return otvet_C_Part.Data;
+        }
+
+        [System.Serializable]
         public struct ResulDataVarEcho
         {
             public string NameMesac;
             public Var var;
+        }
+        [System.Serializable]
+        public struct DataSave
+        {
+            public string Patch;
+            public List<Month> months;
+        }
+        [System.Serializable]
+        public struct Month
+        {
+            public string Name;
+            public List<Var> vars;
+        }
+        [System.Serializable]
+        public struct Var
+        {
+            public uint Num;
+            public GetVar.VarOtvet varOtvet;
         }
     }
 }
