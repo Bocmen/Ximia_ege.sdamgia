@@ -6,9 +6,9 @@
   * <b>PatchSave</b> - Путь к директории сохранения
   * <b>messenge</b> - Делегат для метода `void Messenge(string Mess)`, где `string Mess` сообщение (данная метод используется для логирования состояния)
 * Загрузка (Load) Бд `LoadData(string Patch = null, bool UpdaeData = false);`
-  * <b>Возвращает</b> тип bool True - успешно подгруженна бд, False - загрузка не удалась
   * <b>Patch</b> - Путь к директории с бд
   * <b>UpdaeData</b> - <b>В разработке!!!</b> на данный момент параметр не трогать, только увеличивает время загрузки бд
+  * <b>Возвращает</b> тип bool True - успешно подгруженна бд, False - загрузка не удалась
 * Получить вариант `GetVarID(string Id, string Patch, bool DownloadAutoVar = true);`
   * <b>Id</b> - Id варианта
   * <b>Patch</b> - Путь к месту хранения БД
