@@ -28,4 +28,9 @@
           * `PatchDat[] PatchFotos` - Тип содержащий в себе данные о местонахождении фотографий, содержит в себе:
             * `string PatchFile` - Путь к загруженному файлу
             * `string Url` - Ссылки на фото ведут на сайт [решу егэ](https://chem-ege.sdamgia.ru)
+* Получить Html страницы с ответами `GetHtmlReshenie(List<uint> Nums, string[] Vars, string Patch, bool InternetTrue_FileFalse=false);`
+  * <b>Nums</b> - какие номера отобразить (1-35)
+  * <b>Vars</b> - список запрашиваемых вариантов
+  * <b>Patch</b> - путь к бд
+  * <b>InternetTrue_FileFalse</b> - если True и вариант не найдется то он скачается (<b>В разработке!!</b>)
           
